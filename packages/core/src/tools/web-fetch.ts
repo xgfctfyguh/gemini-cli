@@ -19,7 +19,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { ToolErrorType } from './tool-error.js';
 import { getErrorMessage } from '../utils/errors.js';
 import type { Config } from '../config/config.js';
-import { ApprovalMode, DEFAULT_GEMINI_FLASH_MODEL } from '../config/config.js';
+import { ApprovalMode } from '../config/config.js';
 import { getResponseText } from '../utils/partUtils.js';
 import { fetchWithTimeout, isPrivateIp } from '../utils/fetch.js';
 import { convert } from 'html-to-text';
@@ -168,11 +168,14 @@ I was unable to access the URL directly. Instead, I have fetched the raw content
 ${textContent}
 ---
 `;
+      const resolvedConfig =
+        this.config.generationConfigService.getResolvedConfig({
+          model: 'summarizer-default',
+        });
       const result = await geminiClient.generateContent(
         [{ role: 'user', parts: [{ text: fallbackPrompt }] }],
-        {},
         signal,
-        DEFAULT_GEMINI_FLASH_MODEL,
+        resolvedConfig,
       );
       const resultText = getResponseText(result) || '';
       return {
@@ -252,11 +255,14 @@ ${textContent}
     const geminiClient = this.config.getGeminiClient();
 
     try {
+      const resolvedConfig =
+        this.config.generationConfigService.getResolvedConfig({
+          model: 'web-fetch-tool',
+        });
       const response = await geminiClient.generateContent(
         [{ role: 'user', parts: [{ text: userPrompt }] }],
-        { tools: [{ urlContext: {} }] },
         signal, // Pass signal
-        DEFAULT_GEMINI_FLASH_MODEL,
+        resolvedConfig,
       );
 
       debugLogger.debug(
