@@ -456,7 +456,7 @@ export class LoopDetectionService {
 
         // Double check with configured model
         const mainModelResult = await this.queryLoopDetectionModel(
-          mainModel,
+          DEFAULT_GEMINI_FLASH_MODEL,
           contents,
           schema,
           signal,
